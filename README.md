@@ -1,2 +1,1 @@
-# Bo
 Trading bocky bot
