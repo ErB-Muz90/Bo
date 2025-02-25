@@ -1,0 +1,389 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" collection="false">
+  <variables>
+    <variable type="" id="x]b3MHpbtR?cJQDP@,eG">martingale:resultIsWin</variable>
+    <variable type="" id="[M$5RsD`g|8-P;C+mbf4">martingale:profit</variable>
+    <variable type="" id="Kb@{Vb{+5IqV=d~y*dcr">martingale:totalProfit</variable>
+    <variable type="" id="6G^6o^Ic@rjF|sHv*m.6">martingale:tradeAgain</variable>
+    <variable type="" id="*p5|Lkk9Q^ZuPBQ-48g2">martingale:expectedProfit</variable>
+    <variable type="" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</variable>
+    <variable type="" id="[$B]vBH,~wrN`PUt5m/f">martingale:amount</variable>
+    <variable type="" id="a1BTYNHC?_yR4sfvNJ7N">martingale:maximumLoss</variable>
+    <!-- New variables -->
+    <variable type="" id="tradeCount">martingale:tradeCount</variable>
+    <variable type="" id="consecutiveLosses">martingale:consecutiveLosses</variable>
+    <variable type="" id="maxConsecutiveLosses">martingale:maxConsecutiveLosses</variable>
+  </variables>
+  <!-- Procedure: Calculate Trade Amount and Initialize Parameters -->
+  <block type="procedures_defreturn" id="qq2xGirc*Byb/P/HE^]H" collapsed="false" x="0" y="0">
+    <field name="NAME">Martingale Trade Amount</field>
+    <comment pinned="false" h="80" w="200">Calculates the trade amount (trade size × base amount) and prompts to set key parameters if not already set.</comment>
+    <statement name="STACK">
+      <!-- If expected profit is not set, prompt for it -->
+      <block type="controls_if" id="if_expectedProfit">
+        <value name="IF0">
+          <block type="logic_compare" id="cmp_expectedProfit">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="variables_get" id="get_expectedProfit">
+                <field name="VAR" id="*p5|Lkk9Q^ZuPBQ-48g2">martingale:expectedProfit</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="logic_null" id="null_expectedProfit"></block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="set_expectedProfit">
+            <field name="VAR" id="*p5|Lkk9Q^ZuPBQ-48g2">martingale:expectedProfit</field>
+            <value name="VALUE">
+              <block type="text_prompt_ext" id="prompt_expectedProfit">
+                <mutation type="NUMBER"></mutation>
+                <field name="TYPE">NUMBER</field>
+                <value name="TEXT">
+                  <block type="text" id="text_expectedProfit">
+                    <field name="TEXT">Expected Profit</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <next>
+          <!-- If maximum loss is not set, prompt for it -->
+          <block type="controls_if" id="if_maximumLoss">
+            <value name="IF0">
+              <block type="logic_compare" id="cmp_maximumLoss">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="variables_get" id="get_maximumLoss">
+                    <field name="VAR" id="a1BTYNHC?_yR4sfvNJ7N">martingale:maximumLoss</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="logic_null" id="null_maximumLoss"></block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="variables_set" id="set_maximumLoss">
+                <field name="VAR" id="a1BTYNHC?_yR4sfvNJ7N">martingale:maximumLoss</field>
+                <value name="VALUE">
+                  <block type="text_prompt_ext" id="prompt_maximumLoss">
+                    <mutation type="NUMBER"></mutation>
+                    <field name="TYPE">NUMBER</field>
+                    <value name="TEXT">
+                      <block type="text" id="text_maximumLoss">
+                        <field name="TEXT">Maximum Loss Amount</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <!-- If base trade amount is not set, prompt for it -->
+              <block type="controls_if" id="if_amount">
+                <value name="IF0">
+                  <block type="logic_compare" id="cmp_amount">
+                    <field name="OP">EQ</field>
+                    <value name="A">
+                      <block type="variables_get" id="get_amount">
+                        <field name="VAR" id="[$B]vBH,~wrN`PUt5m/f">martingale:amount</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="logic_null" id="null_amount"></block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="variables_set" id="set_amount">
+                    <field name="VAR" id="[$B]vBH,~wrN`PUt5m/f">martingale:amount</field>
+                    <value name="VALUE">
+                      <block type="text_prompt_ext" id="prompt_amount">
+                        <mutation type="NUMBER"></mutation>
+                        <field name="TYPE">NUMBER</field>
+                        <value name="TEXT">
+                          <block type="text" id="text_amount">
+                            <field name="TEXT">Trade Amount</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <next>
+                  <!-- If trade size is not set, initialize it to 1 -->
+                  <block type="controls_if" id="if_size">
+                    <value name="IF0">
+                      <block type="logic_compare" id="cmp_size">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="get_size">
+                            <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="logic_null" id="null_size"></block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="variables_set" id="set_size">
+                        <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+                        <value name="VALUE">
+                          <block type="math_number" id="num_size">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                    <next>
+                      <!-- If total profit is not set, initialize it to 0 -->
+                      <block type="controls_if" id="if_totalProfit">
+                        <value name="IF0">
+                          <block type="logic_compare" id="cmp_totalProfit">
+                            <field name="OP">EQ</field>
+                            <value name="A">
+                              <block type="variables_get" id="get_totalProfit">
+                                <field name="VAR" id="Kb@{Vb{+5IqV=d~y*dcr">martingale:totalProfit</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="logic_null" id="null_totalProfit"></block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="variables_set" id="set_totalProfit">
+                            <field name="VAR" id="Kb@{Vb{+5IqV=d~y*dcr">martingale:totalProfit</field>
+                            <value name="VALUE">
+                              <block type="math_number" id="num_totalProfit">
+                                <field name="NUM">0</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <!-- Initialize new variables if they are null -->
+                          <block type="controls_if" id="if_tradeCount">
+                            <value name="IF0">
+                              <block type="logic_compare" id="cmp_tradeCount">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="get_tradeCount">
+                                    <field name="VAR" id="tradeCount">martingale:tradeCount</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="logic_null" id="null_tradeCount"></block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO0">
+                              <block type="variables_set" id="set_tradeCount">
+                                <field name="VAR" id="tradeCount">martingale:tradeCount</field>
+                                <value name="VALUE">
+                                  <block type="math_number" id="num_tradeCount">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </statement>
+                            <next>
+                              <block type="controls_if" id="if_consecutiveLosses">
+                                <value name="IF0">
+                                  <block type="logic_compare" id="cmp_consecutiveLosses">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get" id="get_consecutiveLosses">
+                                        <field name="VAR" id="consecutiveLosses">martingale:consecutiveLosses</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="logic_null" id="null_consecutiveLosses"></block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO0">
+                                  <block type="variables_set" id="set_consecutiveLosses">
+                                    <field name="VAR" id="consecutiveLosses">martingale:consecutiveLosses</field>
+                                    <value name="VALUE">
+                                      <block type="math_number" id="num_consecutiveLosses">
+                                        <field name="NUM">0</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </statement>
+                                <next>
+                                  <block type="controls_if" id="if_maxConsecutiveLosses">
+                                    <value name="IF0">
+                                      <block type="logic_compare" id="cmp_maxConsecutiveLosses">
+                                        <field name="OP">EQ</field>
+                                        <value name="A">
+                                          <block type="variables_get" id="get_maxConsecutiveLosses">
+                                            <field name="VAR" id="maxConsecutiveLosses">martingale:maxConsecutiveLosses</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block type="logic_null" id="null_maxConsecutiveLosses"></block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <statement name="DO0">
+                                      <block type="variables_set" id="set_maxConsecutiveLosses">
+                                        <field name="VAR" id="maxConsecutiveLosses">martingale:maxConsecutiveLosses</field>
+                                        <value name="VALUE">
+                                          <block type="text_prompt_ext" id="prompt_maxConsecutiveLosses">
+                                            <mutation type="NUMBER"></mutation>
+                                            <field name="TYPE">NUMBER</field>
+                                            <value name="TEXT">
+                                              <block type="text" id="text_maxConsecutiveLosses">
+                                                <field name="TEXT">Maximum Consecutive Losses</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </statement>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <!-- Return trade amount = trade size * base trade amount -->
+      <block type="math_arithmetic" id="calc_tradeAmount">
+        <field name="OP">MULTIPLY</field>
+        <value name="A">
+          <block type="variables_get" id="get_size_final">
+            <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="variables_get" id="get_amount_final">
+            <field name="VAR" id="[$B]vBH,~wrN`PUt5m/f">martingale:amount</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <!-- Procedure: Adjust Trade Size and Track Consecutive Losses -->
+  <block type="procedures_defnoreturn" id="MartingaleCore" collapsed="false" x="0" y="300">
+    <mutation>
+      <arg name="martingale:resultIsWin" varid="x]b3MHpbtR?cJQDP@,eG"></arg>
+    </mutation>
+    <field name="NAME">Martingale Core Functionality</field>
+    <comment pinned="false" h="80" w="200">If the trade wins, reset trade size and consecutive losses; if not, double the trade size and increment consecutive losses.</comment>
+    <statement name="STACK">
+      <block type="controls_if" id="core_if">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="variables_get" id="get_resultIsWin">
+            <field name="VAR" id="x]b3MHpbtR?cJQDP@,eG">martingale:resultIsWin</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <!-- On win: reset trade size to 1 and consecutive losses to 0 -->
+          <block type="variables_set" id="set_size_win">
+            <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+            <value name="VALUE">
+              <block type="math_number" id="num_reset">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="set_consecutiveLosses_win">
+                <field name="VAR" id="consecutiveLosses">martingale:consecutiveLosses</field>
+                <value name="VALUE">
+                  <block type="math_number" id="num_reset_consecutive">
+                    <field name="NUM">0</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <!-- On loss: double the trade size and increment consecutive losses by 1 -->
+          <block type="variables_set" id="set_size_loss">
+            <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="multiply_size">
+                <field name="OP">MULTIPLY</field>
+                <value name="A">
+                  <block type="variables_get" id="get_size_loss">
+                    <field name="VAR" id="ipD5?_dQ1Zkvf%v|[?DQ">martingale:size</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="math_number" id="num_double">
+                    <field name="NUM">2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="math_change" id="change_consecutiveLosses">
+                <field name="VAR" id="consecutiveLosses">martingale:consecutiveLosses</field>
+                <value name="DELTA">
+                  <block type="math_number" id="delta_loss">
+                    <field name="NUM">1</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <!-- Procedure: Update Profit, Trade Count, and Decide Whether to Trade Again -->
+  <block type="procedures_defreturn" id="MartingaleTradeAgain" collapsed="false" x="0" y="500">
+    <mutation>
+      <arg name="martingale:profit" varid="[M$5RsD`g|8-P;C+mbf4"></arg>
+      <arg name="martingale:resultIsWin" varid="x]b3MHpbtR?cJQDP@,eG"></arg>
+    </mutation>
+    <field name="NAME">Martingale Trade Again After Purchase</field>
+    <comment pinned="false" h="80" w="220">Update total profit and trade count, then decide if another trade should be made based on profit/loss limits and consecutive losses.</comment>
+    <statement name="STACK">
+      <!-- Update total profit with the recent trade's profit/loss -->
+      <block type="math_change" id="change_totalProfit">
+        <field name="VAR" id="Kb@{Vb{+5IqV=d~y*dcr">martingale:totalProfit</field>
+        <value name="DELTA">
+          <block type="variables_get" id="get_profit">
+            <field name="VAR" id="[M$5RsD`g|8-P;C+mbf4">martingale:profit</field>
+          </block>
+        </value>
+        <next>
+          <!-- Increment the trade count -->
+          <block type="math_change" id="change_tradeCount">
+            <field name="VAR" id="tradeCount">martingale:tradeCount</field>
+            <value name="DELTA">
+              <block type="math_number" id="inc_tradeCount">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+            <next>
+              <!-- Notify the outcome of the trade -->
+              <block type="controls_if" id="notify_result">
+                <value name="IF0">
+                  <block type="variables_get" id="get_resultForNotify">
+                    <field name="VAR" id="x]b3MHpbtR?cJQDP@,eG">martingale:resultIsWin</field>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="notify" id="notify_win">
+                    <field name="NOTIFICATION_TYPE">success</field>
